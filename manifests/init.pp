@@ -17,6 +17,7 @@
 # - *$allow_insecure: Default value false
 # - *$follow_redirects: Default value false
 # - *$verbose: Default value true
+# - *$user: User used to do the download and the extraction. The final directory will be used by him/her.
 #
 # Example usage:
 #
@@ -41,6 +42,7 @@ define archive (
   $allow_insecure=false,
   $follow_redirects=false,
   $verbose=true,
+  $user=undef,
 ) {
 
   archive::download {"${name}.${extension}":
@@ -55,6 +57,7 @@ define archive (
     allow_insecure   => $allow_insecure,
     follow_redirects => $follow_redirects,
     verbose          => $verbose,
+    user             => $user,
   }
 
   archive::extract {$name:
@@ -64,6 +67,7 @@ define archive (
     root_dir   => $root_dir,
     extension  => $extension,
     timeout    => $timeout,
+    user       => $user,
     require    => Archive::Download["${name}.${extension}"]
   }
 }

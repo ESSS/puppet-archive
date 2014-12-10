@@ -13,6 +13,7 @@
 # - *$allow_insecure: Default value false.
 # - *$follow_redirects: Default value false.
 # - *$verbose: Default value true.
+# - *$user: The user used to download the archive
 #
 # Example usage:
 #
@@ -40,6 +41,7 @@ define archive::download (
   $follow_redirects=false,
   $verbose=true,
   $path=$::path,
+  $user=undef,
 ) {
 
   $insecure_arg = $allow_insecure ? {
@@ -76,6 +78,7 @@ define archive::download (
           'present': {
             file {"${src_target}/${name}.${digest_type}":
               ensure  => $ensure,
+              owner   => $user,
               content => "${digest_string} *${name}",
               notify  => Exec["download archive ${name} and check sum"],
             }
@@ -107,6 +110,7 @@ define archive::download (
               timeout => $timeout,
               path    => $path,
               notify  => Exec["download archive ${name} and check sum"],
+              user    => $user,
               require => Package['curl'],
             }
 
@@ -151,6 +155,7 @@ define archive::download (
         path        => $path,
         require     => Package['curl'],
         notify      => $_notify,
+        user        => $user,
         refreshonly => $refreshonly,
       }
 
